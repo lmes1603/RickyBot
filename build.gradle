@@ -1,0 +1,88 @@
+buildscript {
+    ext {
+        springBootVersion = '2.2.0.RELEASE'
+    }
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven {
+            url 'https://dl.bintray.com/sedmelluq/com.sedmelluq'
+        }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+        classpath("org.springframework.boot:spring-boot-starter-jersey:${springBootVersion}")
+    }
+}
+
+plugins {
+    id 'java'
+    id 'idea'
+    id 'distribution'
+    id 'org.springframework.boot' version '2.2.0.RELEASE'
+    id 'application'
+}
+
+mainClassName = 'net.dirtydeeds.discordsoundboard.MainController'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+bootJar {
+    manifest {
+        attributes 'Implementation-Title': rootProject.name,
+                'Implementation-Version': projectVersion
+    }
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    compile 'net.dv8tion:JDA:4.2.0_214'
+    compile 'com.sedmelluq:lavaplayer:1.3.55'
+    //compile 'com.sedmelluq:lavaplayer-natives-extra:1.3.13'
+    compile 'commons-io:commons-io:2.8.0'
+
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.2.0.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-jersey', version: '2.2.0.RELEASE'
+
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '2.2.0.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.2.0.RELEASE'
+    compile group: 'com.h2database', name: 'h2', version: '1.4.200'
+
+    compile "io.springfox:springfox-swagger2:2.4.0"
+    compile 'io.springfox:springfox-swagger-ui:2.4.0'
+}
+
+processResources {
+    exclude 'app.properties'
+}
+
+distributions {
+    main {
+        baseName = 'DiscordSoundboard'
+    }
+}
+
+bootJar {
+    exclude ("application.properties")
+}
+
+bootDistZip {
+    archiveName = 'DiscordSoundboard.zip'
+    into ("DiscordSoundboard/bin") {
+        from ('/src/main/resources/application.properties.example')
+    }
+    into("DiscordSoundboard/bin/static") {
+        from('src/main/webapp')
+    }
+    into("DiscordSoundboard/bin/sounds") {
+        from('sounds')
+    }
+    rename { String fileName ->
+        fileName.replace('application.properties.example', 'application.properties') }
+}
